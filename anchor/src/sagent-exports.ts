@@ -3,7 +3,6 @@ import { AnchorProvider, Program } from '@coral-xyz/anchor'
 import { Cluster, PublicKey } from '@solana/web3.js'
 import SagentIDL from '../target/idl/sagent.json'
 import type { Sagent } from '../target/types/sagent'
-import { BN } from 'bn.js'
 
 // Re-export the generated IDL and type
 export { Sagent, SagentIDL }

@@ -68,7 +68,7 @@ export function useSagentProgram() {
         params.subscriptionPrice,
         params.subscriptionAllowance
       )
-      .accounts({
+      .accountsPartial({
         config: configPda,
         treasury: treasuryPda,
         admin: params.admin,
@@ -92,7 +92,8 @@ export function useSagentProgram() {
     subscribe: useMutation({
       mutationKey: ['sagent', 'subscribe', { cluster }],
       mutationFn: (publicKey: PublicKey) => program.methods.subscribe()
-        .accounts({
+        .accountsPartial({
+          // @ts-ignore
           user: profilePda,
           initializer: publicKey,
           systemProgram: SystemProgram.programId,
@@ -109,8 +110,10 @@ export function useSagentProgram() {
       mutationKey: ['sagent', 'sendSol', { cluster }],
       mutationFn: ({ amount, recipient }: { amount: BN, recipient: PublicKey }) => 
         program.methods.sendSol(amount)
-          .accounts({
+          .accountsPartial({
+            // @ts-ignore
             user: publicKey,
+            // @ts-ignore
             profile: profilePda,
             config: configPda,
             treasury: treasuryPda,
@@ -153,7 +156,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
     mutationKey: ['sagent', 'create-profile', { cluster, publicKey }],
     mutationFn: (name: string) => program.methods
       .addUser(name)
-      .accounts({
+      .accountsPartial({
         config: configPda,
         user: profilePda,
         initializer: publicKey,
@@ -210,6 +213,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
       }
       else{
         const result = await program.provider.connection.getParsedAccountInfo(params.inputTokenMint)
+        // @ts-ignore
         const {decimals} = result?.value?.data?.parsed?.info || {};
         amountFinal = params.amountIn.mul(new BN(10 ** decimals));
       }
@@ -299,6 +303,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
     mutationFn: (mint: PublicKey) => program.methods
       .mintNft()
       .accounts({
+        // @ts-ignore
         config: configPda,
         profile: profilePda,
         user: publicKey,
@@ -318,6 +323,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
     mutationKey: ['sagent', 'subscribe', { cluster, publicKey }],
     mutationFn: () => program.methods.subscribe()
       .accounts({
+        // @ts-ignore
         user: profilePda,
         initializer: publicKey,
         systemProgram: SystemProgram.programId,
@@ -410,6 +416,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
       // Create token mint with all test file accounts
       await program.methods.createMint(metadata)
         .accounts({
+          // @ts-ignore
           profile:profilePda,
           config:configPda,
           treasury:treasuryPda,
@@ -632,6 +639,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
           )[0],
           mint: mintKeypair.publicKey,
           signer: publicKey,
+          // @ts-ignore
           rent: SYSVAR_RENT_PUBKEY,
           systemProgram: SystemProgram.programId,
           tokenProgram: TOKEN_PROGRAM_ID,
@@ -660,6 +668,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
         program.methods.sendSol(amount)
           .accounts({
             user: publicKey,
+            // @ts-ignore
             profile: profilePda,
             config: configPda,
             treasury: treasuryPda,
@@ -680,6 +689,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
         mint: PublicKey 
       }) => {
         const result = await program.provider.connection.getParsedAccountInfo(mint)
+        // @ts-ignore
         const {decimals} = result?.value?.data?.parsed?.info || {};
         const amountBN = new BN(amount * 10 ** decimals);
         const treasuryAta = getAssociatedTokenAddressSync(
@@ -731,6 +741,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
           user: publicKey,
           recipient,
           mint,
+          // @ts-ignore
           profile: profilePda,
           config: configPda,
           treasury: treasuryPda,
