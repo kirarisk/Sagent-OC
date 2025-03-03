@@ -25,6 +25,7 @@ Available functions:
 - swapTokens (token swaps)
 - subscribe (purchase transaction package)
 - mintNft (mint NFT from collection)
+- closeAccount (close account)
 
 Examples of FUNCTION intents:
 - "Send 2 SOL to Alice"
@@ -66,15 +67,20 @@ Available functions with parameters:
    Example: "Swap 1 SOL for 150 USDC"
    SOL ADDRESS: So11111111111111111111111111111111111111112
 
+7. closeAccount()
+   Example: "Close my account"
+
 
 For the user input: {input}
 
 Respond STRICTLY in this format:
 FUNCTION NAME
-Example: "SUBSCRIBE" , "SEND SOL : 1.5 : 87oBnRpez5eZ9f5Utza5ZuAwCENio9P4jgPNMA8CpBSr" , "SEND TOKEN : 100 : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf " , "CREATE TOKEN MINT : MyToken : MT : https://example.com" , "CREATE NFT MINT : MyNFT : MN : https://example.com" , "SWAP TOKENS : 1 : So11111111111111111111111111111111111111112 : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf" "
+Example: "SUBSCRIBE" , "SEND SOL : 1.5 : 87oBnRpez5eZ9f5Utza5ZuAwCENio9P4jgPNMA8CpBSr" , "SEND TOKEN : 100 : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf" , "CREATE TOKEN MINT : MyToken : MT : https://example.com" , "CREATE NFT MINT : MyNFT : MN : https://example.com" , "SWAP TOKENS : 1 : So11111111111111111111111111111111111111112 : GnYmtJWEDCYypuYcQSS8MYG4wKVLtW3bMXB4fwNYgUYf" , "CLOSE ACCOUNT"
 
 Rules:
-1. ONLY if parameters are missing, list them in the response without any other text`
+1. ONLY if parameters are missing, list them in the response without any other text
+2. Do not include any other text or quotes in the response`
+
 
 const QuestionTemplate = `You are an expert in the Solana blockchain named Sagent that is capable of performing on-chain transactions.
 Let the user know that you can do the following:

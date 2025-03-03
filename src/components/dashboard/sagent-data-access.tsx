@@ -17,7 +17,6 @@ const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzj
 // Add NATIVE_MINT constant
 const NATIVE_MINT = new PublicKey('So11111111111111111111111111111111111111112')
 
-
 // Add all program constants from test file
 const CPMM_PROGRAM_ID = new PublicKey('CPMDWBwJDtYax9qW7AyRuVC19Cc4L4Vcy4n2BHAbHkCW')
 const LOCK_CPMM_AUTHORITY_ID= new PublicKey('7AFUeLVRjBfzqK3tTGw8hN48KLQWSk6DTE8xprWdPqix')
@@ -345,6 +344,7 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
       uri: string
       decimals: number
     }) => {
+
 
       // Generate fresh keypairs every time
       const mintKeypair = Keypair.generate()
@@ -759,6 +759,20 @@ export function useSagentProfile({ publicKey }: { publicKey: PublicKey }) {
     swapTokens,
     createTokenMint,
     createNftMint,
+    closeAccount: useMutation({
+      mutationKey: ['sagent', 'closeAccount', { cluster, publicKey }],
+      mutationFn: () => program.methods.close()
+        .accountsPartial({
+          user: profilePda,
+          initializer: publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .rpc(),
+      onSuccess: (tx) => {
+        transactionToast(tx)
+        return getProfile.refetch()
+      },
+    })
   }
 }
 

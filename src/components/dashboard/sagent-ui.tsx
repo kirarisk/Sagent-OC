@@ -88,6 +88,7 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
     createTokenMint,
     createNftMint,
     swapTokens,
+    closeAccount
   } = useSagentProfile({ publicKey })
   const [sendAmount, setSendAmount] = useState('')
   const [recipient, setRecipient] = useState('')
@@ -208,7 +209,7 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
             }
             const tokenName = createTokenMintParams[1];
             const tokenSymbol = createTokenMintParams[2];
-            const tokenUri = createTokenMintParams[3];
+            const tokenUri = (createTokenMintParams[3]+':'+createTokenMintParams[4]);
             createTokenMint.mutateAsync({
               name: tokenName,
               symbol: tokenSymbol,
@@ -238,7 +239,7 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
             }
             const nftName = createNftMintParams[1];
             const nftSymbol = createNftMintParams[2];
-            const nftUri = createNftMintParams[3];
+            const nftUri = createNftMintParams.slice(3).join(':');
             createNftMint.mutateAsync({
               name: nftName,
               symbol: nftSymbol,
@@ -254,27 +255,44 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
             });
             break;
 
-      // SWAP TOKENS CASE
-        case(
-          lastMessage.role === 'assistant' && 
-          lastMessage.content.startsWith('SWAP TOKENS') &&
-          !swapTokens.isPending
-        ):
+          // SWAP TOKENS CASE
+          case(
+            lastMessage.role === 'assistant' && 
+            lastMessage.content.startsWith('SWAP TOKENS') &&
+            !swapTokens.isPending
+          ):
+              processedIds.current.add(lastMessage.id);
+              const swapTokensParams = lastMessage.content.split(':').map(p => p.trim());
+              if (swapTokensParams.length < 3) {
+                  console.error('Invalid SWAP TOKENS format');
+                  break;
+              }
+              const swapAmountIn = swapTokensParams[1];
+              const inputTokenMint = swapTokensParams[2];
+              const outputTokenMint = swapTokensParams[3];
+              swapTokens.mutateAsync({
+                amountIn: new BN(parseFloat(swapAmountIn)),
+                amountOutMin: new BN( (0)),
+                inputTokenMint: new PublicKey(inputTokenMint),
+                outputTokenMint: new PublicKey(outputTokenMint)
+              }).then((tx) => {
+                console.log('Transaction ID:', tx);
+                append({
+                  id: Date.now().toString(),
+                  content: `Transaction Confirmed!`,
+                  role: 'system' 
+                });
+              });
+              break;
+
+          // CLOSE ACCOUNT CASE
+            case(
+              lastMessage.role === 'assistant' && 
+              lastMessage.content.startsWith('CLOSE ACCOUNT') &&
+              !closeAccount.isPending
+            ):
             processedIds.current.add(lastMessage.id);
-            const swapTokensParams = lastMessage.content.split(':').map(p => p.trim());
-            if (swapTokensParams.length < 4) {
-                console.error('Invalid SWAP TOKENS format');
-                break;
-            }
-            const swapAmountIn = swapTokensParams[1];
-            const inputTokenMint = swapTokensParams[2];
-            const outputTokenMint = swapTokensParams[3];
-            swapTokens.mutateAsync({
-              amountIn: new BN(parseFloat(swapAmountIn)),
-              amountOutMin: new BN( (0)),
-              inputTokenMint: new PublicKey(inputTokenMint),
-              outputTokenMint: new PublicKey(outputTokenMint)
-            }).then((tx) => {
+            closeAccount.mutateAsync().then((tx) => {
               console.log('Transaction ID:', tx);
               append({
                 id: Date.now().toString(),
@@ -283,10 +301,11 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
               });
             });
             break;
+
             default:
             // No action needed for other cases
     }
-}, [messages, subscribe.isPending, sendSol.isPending, sendToken.isPending, append, isLoading, createTokenMint.isPending, createNftMint.isPending, swapTokens.isPending, sendNft.isPending]);
+}, [messages, subscribe.isPending, sendSol.isPending, sendToken.isPending, append, isLoading, createTokenMint.isPending, createNftMint.isPending, swapTokens.isPending, sendNft.isPending, closeAccount.isPending]);
 
 
 
