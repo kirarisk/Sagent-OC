@@ -1,18 +1,12 @@
-import OpenAI from 'openai';
-import { createStreamDataTransformer, LangChainAdapter, OpenAIStream, StreamingTextResponse } from 'ai';
+import {  Message as VercelChatMessage, LangChainAdapter } from 'ai';
 import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import { RunnableSequence } from '@langchain/core/runnables';
-import { ExplorerLink } from '@/components/cluster/cluster-ui'
-import { useSagentProgram, useSagentProfile } from '@/components/dashboard/sagent-data-access'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { BN } from '@coral-xyz/anchor'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
-import { PublicKey } from '@solana/web3.js'
 
 export const dynamic = 'force-dynamic'
-
+const formatMessage = (message: VercelChatMessage) => {
+    return `${message.role}: ${message.content}`;
+};
 const intentTemplate = `You are a Solana blockchain assistant. Analyze the user's input and classify their intent as either:
 - "QUESTION": General inquiries, explanations, or non-transaction requests
 - "FUNCTION": Requests that require executing blockchain transactions
@@ -37,6 +31,7 @@ Examples of QUESTION intents:
 - "How do I create a token?"
 - "Explain what an NFT is"
 - "What's the current SOL price?"
+
 
 User input: {input}
 
@@ -70,6 +65,8 @@ Available functions with parameters:
 7. closeAccount()
    Example: "Close my account"
 
+Current conversation:
+{chat_history}
 
 For the user input: {input}
 
@@ -92,8 +89,13 @@ Let the user know that you can do the following:
 - purchase a transaction package
 - mint an NFT from a collection
 
+
 All they have to do is ask you to do one of these things and you will do it!
 Keep your responses short and concise.
+
+Current conversation:
+{chat_history}
+
 User input: {input}
 
 AI: Answer
@@ -103,7 +105,10 @@ AI: Answer
 export async function POST(req: Request) {
     try{
         const {messages} = await req.json()
-        const input=messages[messages.length-1].content
+        const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+
+        const currentMessageContent = messages.at(-1).content;
+
 
         const OPENAI_API_KEY=process.env.OPENAI_API_KEY!
         const llm =new ChatOpenAI({
@@ -115,23 +120,23 @@ export async function POST(req: Request) {
         const intentPrompt = PromptTemplate.fromTemplate(intentTemplate);
         const parser= new StringOutputParser();
         const intentChain = intentPrompt.pipe(llm).pipe(parser);
-        const intent = await intentChain.invoke({ input });
+        const intent = await intentChain.invoke({ input: currentMessageContent });
         const functionPrompt = PromptTemplate.fromTemplate(FunctionParserTemplate);
 
         switch(intent) {
             case "QUESTION":
-                if (input === "Transaction Confirmed!") {
+                if (currentMessageContent === "Transaction Confirmed!") {
                     return new Response(null, { status: 204 });
                 }
                 
                 const questionPrompt = PromptTemplate.fromTemplate(QuestionTemplate);
                 const questionChain = questionPrompt.pipe(llm).pipe(parser);
-                const answer = await questionChain.stream({ input });
+                const answer = await questionChain.stream({ chat_history: formattedPreviousMessages.join('\n'),input: currentMessageContent });
                 return LangChainAdapter.toDataStreamResponse(answer);
 
             case "FUNCTION":
                 const functionChain = functionPrompt.pipe(llm).pipe(parser);
-                const functionResponse = await functionChain.stream({ input });
+                const functionResponse = await functionChain.stream({ chat_history: formattedPreviousMessages.join('\n'),input: currentMessageContent });
                 return LangChainAdapter.toDataStreamResponse(functionResponse);
 
             default:

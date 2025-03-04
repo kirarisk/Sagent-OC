@@ -215,8 +215,13 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
               symbol: tokenSymbol,
               uri: tokenUri,
               decimals: 6
-            }).then((tx) => {
+            }).then(({ tx, mint }) => {
               console.log('Transaction ID:', tx);
+              append({
+                id: Date.now().toString(),
+                content: `Token Mint: ${mint.toString()}`,
+                role: 'system' 
+              });
               append({
                 id: Date.now().toString(),
                 content: `Transaction Confirmed!`,

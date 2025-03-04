@@ -24,6 +24,14 @@ const LOCK_CPMM_PROGRAM_ID = new PublicKey('DLockwT7X7sxtLmGH9g5kmfcjaBtncdbUmi7
 const AMM_CONFIG_ID = new PublicKey('9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6')
 const CREATE_POOL_FEE = new PublicKey('G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2')
 
+
+// Mainnet addresses for localnet cloned
+// const CPMM_PROGRAM_ID = new PublicKey('CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C')
+// const LOCK_CPMM_AUTHORITY_ID= new PublicKey('3f7GcQFG397GAaEnv51zR6tsTVihYRydnydDD1cXekxH')
+// const LOCK_CPMM_PROGRAM_ID = new PublicKey('LockrWmn6K5twhz3y9w1dQERbmgSaRkfnTeTKbpofwE')
+// const AMM_CONFIG_ID = new PublicKey('D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2')
+// const CREATE_POOL_FEE = new PublicKey('DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8')
+
 export function useSagentProgram() {
   const { connection } = useConnection()
   // const connection = new Connection("http://127.0.0.1:8899", "confirmed");
