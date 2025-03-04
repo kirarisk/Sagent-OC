@@ -178,9 +178,9 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
             }
             const tokenSendAmount =  sendTokenParams[1];
             console.log('Amount:', tokenSendAmount);
-            const tokenRecipient = sendTokenParams[2];
+            const tokenRecipient = sendTokenParams[3];
             console.log('Recipient:', tokenRecipient);
-            const tokenMint = sendTokenParams[3];
+            const tokenMint = sendTokenParams[2];
             sendToken.mutateAsync({
               amount: parseFloat(tokenSendAmount),
               recipient: new PublicKey(tokenRecipient),
