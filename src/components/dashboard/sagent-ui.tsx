@@ -196,39 +196,39 @@ function UserProfileCard({ publicKey }: { publicKey: PublicKey }) {
             break;
 
       // CREATE TOKEN MINT CASE
-        case(
-          lastMessage.role === 'assistant' && 
-          lastMessage.content.startsWith('CREATE TOKEN MINT') &&
-          !createTokenMint.isPending
-        ):
-            processedIds.current.add(lastMessage.id);
-            const createTokenMintParams = lastMessage.content.split(':').map(p => p.trim());
-            if (createTokenMintParams.length < 4) {
-                console.error('Invalid CREATE TOKEN MINT format');
-                break;
-            }
-            const tokenName = createTokenMintParams[1];
-            const tokenSymbol = createTokenMintParams[2];
-            const tokenUri = (createTokenMintParams[3]+':'+createTokenMintParams[4]);
-            createTokenMint.mutateAsync({
-              name: tokenName,
-              symbol: tokenSymbol,
-              uri: tokenUri,
-              decimals: 6
-            }).then(({ tx, mint }) => {
-              console.log('Transaction ID:', tx);
-              append({
-                id: Date.now().toString(),
-                content: `Token Mint: ${mint.toString()}`,
-                role: 'system' 
-              });
-              append({
-                id: Date.now().toString(),
-                content: `Transaction Confirmed!`,
-                role: 'system' 
-              });
+      case(
+        lastMessage.role === 'assistant' && 
+        lastMessage.content.startsWith('CREATE TOKEN MINT') &&
+        !createTokenMint.isPending
+      ):
+          processedIds.current.add(lastMessage.id);
+          const createTokenMintParams = lastMessage.content.split(':').map(p => p.trim());
+          if (createTokenMintParams.length < 4) {
+              console.error('Invalid CREATE TOKEN MINT format');
+              break;
+          }
+          const tokenName = createTokenMintParams[1];
+          const tokenSymbol = createTokenMintParams[2];
+          const tokenUri = (createTokenMintParams[3]+':'+createTokenMintParams[4]);
+          createTokenMint.mutateAsync({
+            name: tokenName,
+            symbol: tokenSymbol,
+            uri: tokenUri,
+            decimals: 6
+          }).then(({ tx, mint }) => {
+            console.log('Transaction ID:', tx);
+            append({
+              id: Date.now().toString(),
+              content: `Token Mint: ${mint.toString()}`,
+              role: 'system' 
             });
-            break;
+            append({
+              id: Date.now().toString()+1,
+              content: `Transaction Confirmed!`,
+              role: 'system' 
+            });
+          });
+          break;
 
       // CREATE NFT MINT CASE
         case(
