@@ -9,8 +9,6 @@ Sagent is your autonomous Solana on-chain assistant that executes commands and p
 
 The application is deployed and live at: [Sagent - Solana Agent](https://sagent.vercel.app/)
 
-Video Preview: [Turbin3 - Capstone Submission](https://x.com/solanaturbine/status/1902038708586738084)
-
 Program ID on Devnet: SAGEfgw3ncJAvhqBadJ8B377AvPEJ5wGw6jtgGKFueG
 
 ## Project Description
@@ -37,7 +35,7 @@ Sagent is a powerful on-chain assistant that enables:
 
 Ensure you have the following installed:
 
-- **Rust**: `rustc 1.79.0`
+- **Rust**: `rustc 1.82.0`
 - **Solana CLI**: `solana-cli 1.18.18`
 - **Anchor CLI**: `anchor-cli 0.30.1`
 - **Node.js**: `v20.10.0`
@@ -49,12 +47,12 @@ Follow these steps to build and test the Sagent program:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/kirarisk/Sagent-OC.git
+   git clone https://github.com/solana-turbin3/Q1_25_Builder_karimnasereddin.git
    ```
 
 2. **Navigate to the Project Directory**
    ```bash
-   cd Sagent-OC/sagent
+   cd capstone/sagent
    ```
 
 3. **Install Dependencies**
